@@ -38,11 +38,12 @@ def main():
 		if postag[1] == 'NNP' or postag[1] == 'NN':		# store the noun words 
 			nounflag = 1
 		        noun = postag[1]		
-		if postag[1] == 'VBN' or postag[1] == 'JJ':
+		if postag[1] == 'JJ' or postag[1] == 'VBN':
 			adjflag = 1
 			adj = postag[0]
 			score += int(sentiment_score[postag[0]]) if postag[0] in sentiment_score else 0			
-
+	
+	print "Tweet is about"+str(sentence)
  	print str(score)+'\n'
 
 if __name__ == '__main__':
