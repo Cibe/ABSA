@@ -8,31 +8,42 @@ import nltk                  # NLTK Toolkit!
 def lines(fp):
     print str(len(fp.readlines()))
 
+
 def main():
     sent_file = open(sys.argv[1])          # file containing sentiment scores
     tweet_file = open(sys.argv[2])         # file containing tweets
     sent_lines=sent_file.readlines()
     tweet_lines=tweet_file.readlines()
-    word_count={}
+    sentiment_score={}
 
     for line in sent_lines:            	   # create a dictionary containing word count for every word
     	word,count=line.split("\t")
-     	word_count[word]=count
+     	sentiment_score[word]=count
 
     for line in tweet_lines:
     	json_object=json.loads(line) 	   		   # parse the json object and extract the tweets from them
-     	tweet_text=json_object["text"].encode("utf-8")
+     	tweet_text=json_object["statuses"][0]["text"].encode("utf-8")
 
-     for sentence in nltk.sent_tokenize(tweet_text):
-     	for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sentence)), binary=True):
-        	if hasattr(chunk,'node'):
-                	str=chunk.node, ' '.join(c[0] for c in chunk.leaves())     
+    # tweet_text  = ["Nexus is realy awesome"]
+    print tweet_text
 
-     words=tweet_text.split(" ")
-     sum=0
-     for word1 in words:
-      sum+=word_count[word1] if word1 in word_count else 0
-     print tweet_text,":",sum
+    for sentence in tweet_text:
+        postags = nltk.pos_tag(sentence.split(" "))                   # tags associated with the sentence is taken out
+	print postags
+	nounflag = 0
+	adj_flag = 0
+	score = 0
+	noun = "No Subject"
+	for postag in postags:    
+		if postag[1] == 'NNP' or postag[1] == 'NN':		# store the noun words 
+			nounflag = 1
+		        noun = postag[1]		
+		if postag[1] == 'VBN' or postag[1] == 'JJ':
+			adjflag = 1
+			adj = postag[0]
+			score += int(sentiment_score[postag[0]]) if postag[0] in sentiment_score else 0			
+
+ 	print str(score)+'\n'
 
 if __name__ == '__main__':
     main()
